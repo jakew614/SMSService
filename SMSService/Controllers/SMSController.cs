@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SMSService.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,36 +9,41 @@ namespace SMSService.Controllers
     [ApiController]
     public class SMSController : ControllerBase
     {
-        // GET: api/<SMSController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        [Route("api/[controller]")]
+        [ApiController]
+        public class SMSControllers : ControllerBase
         {
-            return new string[] { "value1", "value2" };
-        }
+            private const string LOGFILENAME = "c:\\temp\\TextMessages.txt";
 
-        // GET api/<SMSController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
+            // POST api/<SMSController>
+            [HttpPost]
+            public void Post(CreateSMS msg)
+            {
+                if (ModelState.IsValid)
+                {
+                    log("Sent: " + msg);
+                    //return (IHttpActionResult)Ok();
+                }
+                else
+                {
+                    //return (IHttpActionResult)BadRequest();
+                }
+            }
 
-        // POST api/<SMSController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<SMSController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<SMSController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            private void log(string logText)
+            {
+                try
+                {
+                    StreamWriter logWriter = new StreamWriter(LOGFILENAME, true);
+                    logWriter.Write(logText);
+                    logWriter.WriteLine(" " + DateTime.Now);
+                    logWriter.Close();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
         }
     }
 }
